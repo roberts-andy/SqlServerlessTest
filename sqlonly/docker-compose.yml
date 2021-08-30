@@ -1,0 +1,13 @@
+
+version: '3.4'
+
+services:
+  sqlonly:
+    properties:
+      environmentVariables:
+        - name: sqlconnectionstring
+          secureValue: 'Server=tcp:andyrobsqlserverlesstestsql.database.windows.net,1433;Initial Catalog=sqlserverlesstestdb;Persist Security Info=False;User ID=andyrob;Password=pass@word1234;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+    image: sqlonly
+    build:
+      context: .
+      dockerfile: ./Dockerfile
