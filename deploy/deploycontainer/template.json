@@ -1,0 +1,70 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerName": {
+            "type": "string"
+        },
+        "imageName": {
+            "type": "string"
+        },
+        "imageRegistryLoginServer": {
+            "type": "string"
+        },
+        "imageUsername": {
+            "type": "string"
+        },
+        "imagePassword": {
+            "type": "secureString"
+        }
+    },
+    "resources": [
+        {
+            "location": "eastus",
+            "name": "[parameters('containerName')]",
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "apiVersion": "2019-12-01",
+            "properties": {
+                "containers": [
+                    {
+                        "name": "[parameters('containerName')]",
+                        "properties": {
+                            "image": "[parameters('imageName')]",
+                            "resources": {
+                                "requests": {
+                                    "cpu": "1",
+                                    "memoryInGB": "1.5"
+                                }
+                            },
+                            "ports": [
+                                {
+                                    "port": "80",
+                                    "protocol": "TCP"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "restartPolicy": "OnFailure",
+                "osType": "Linux",
+                "imageRegistryCredentials": [
+                    {
+                        "server": "[parameters('imageRegistryLoginServer')]",
+                        "username": "[parameters('imageUsername')]",
+                        "password": "[parameters('imagePassword')]"
+                    }
+                ],
+                "ipAddress": {
+                    "type": "Public",
+                    "ports": [
+                        {
+                            "port": "80",
+                            "protocol": "TCP"
+                        }
+                    ]
+                }
+            },
+            "tags": {}
+        }
+    ]
+}
