@@ -1,6 +1,16 @@
 
 # TODO: 
-update the connection string in app.config to point to your sql server instance
+Add a file named App.config. Add the following XML to the file and replace your the connection string to the connection string of your SQL Server
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>  
+<configuration>  
+  <appSettings>  
+    <add key="sqlconnectionstring" value="<your-connection-string>"/>  
+  </appSettings>  
+</configuration>  
+```
+
 
 # Requirements
 This sample uses dotnet 5. You can build and run the sample locally  with VS Code
