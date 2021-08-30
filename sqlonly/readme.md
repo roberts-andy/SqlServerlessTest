@@ -1,5 +1,3 @@
-Assumes an environment variable sqlconnectionstring.
 
-On windows
-
-$Env.sqlconnectionstring = "your-connection-string"
+# TODO: 
+update the connection string in app.config to point to your sql server instance

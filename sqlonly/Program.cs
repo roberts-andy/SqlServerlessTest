@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Collections.Generic;
-
+using System.Configuration;
 
 namespace sqlonly
 {
@@ -13,6 +13,7 @@ namespace sqlonly
 
         static void Main(string[] args)
         {
+
 
             List<Task> taskList = new List<Task>();
             
@@ -31,9 +32,10 @@ namespace sqlonly
         public void RunTask()
         {
 
+            string connectionString = ConfigurationManager.AppSettings["sqlconnectionstring"];
             Random rand = new Random();
 
-            using SqlConnection conn = new SqlConnection(System.Environment.GetEnvironmentVariable("sqlconnectionstring"));
+            using SqlConnection conn = new SqlConnection(connectionString);
             using SqlCommand cmd = new SqlCommand("uspNewTransaction", conn);
 
             cmd.CommandType = CommandType.StoredProcedure;
