@@ -10,7 +10,7 @@ If you want to deploy to docker, the included docker file will build a linux ima
 I have tested running the image locally in WSL2 and also publishing to an Azure Container Registry and running the container in Azure Container Instances. 
 
 # What does this sample do? 
-The is a REALLY simple test ... I start 100 workers that are all calling a stored proc to insert into a table in SQL. The test was set up to drive and drive load against SQL Server serverless to see if it was going to have the desired throughput for an application that was considering SQL Serverless. 
+The is a REALLY simple test ... I start 100 workers that are all calling a stored proc to insert into a table in SQL. The test was set up to drive and drive load against SQL Server serverless to see if it was going to have the desired throughput for an application that was considering SQL Serverless. Use ACI you can spin up multiple container instances to run at the same time and generate additional load. 
 
 The database only has two objects - A table and a stored procedure:
 
