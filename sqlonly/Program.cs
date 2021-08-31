@@ -19,24 +19,45 @@ namespace sqlonly
             {
                 numWorkers = 100;
             }            
+            List<Worker> workerList = new List<Worker>();
             List<Task> taskList = new List<Task>();
-            for(int i = 0; i < 100; i++)
+            for(int i = 0; i < numWorkers; i++)
             {
                 Worker w = new Worker() { ConnectionString= connectionString, WorkerId = i};
+                workerList.Add(w);
                 taskList.Add(Task.Factory.StartNew(w.RunTask));
             }
-            Task.WaitAll(taskList.ToArray());
+            
+            Task.WaitAll(taskList.ToArray(), 500 * numWorkers);
+            while(true)
+            {
+                long totalCount = 0;
+                double longestWorkerDuration = 0;
+                foreach(Worker w in workerList)
+                {
+                    totalCount += w.State.Count;
+                    longestWorkerDuration = Math.Max(longestWorkerDuration, w.State.Duration);
+                }
+                if (longestWorkerDuration > 0)
+                {
+                    Console.WriteLine($"{longestWorkerDuration};{totalCount}; {totalCount/(longestWorkerDuration)}");
+                }
+                Task.WaitAll(taskList.ToArray(), 10000);
+            }
         }
+
 
     }
 
     public class Worker
     {
+        const string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()[]{}-=_+;':,.<>";
 
         public string ConnectionString {get; set;} 
         public int WorkerId {get; set;}
 
-        const string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()[]{}-=_+;':,.<>";
+        public WorkerState State = new WorkerState() {Count = 0, StartTime = DateTime.UtcNow };
+    
         public void RunTask()
         {
 
@@ -56,7 +77,7 @@ namespace sqlonly
 
             while(true)
             {
-
+                
                 cmd.Parameters["transactionId"].Value = Guid.NewGuid();
                 cmd.Parameters["transactionTime"].Value = DateTime.UtcNow;
                 cmd.Parameters["transactionAmount"].Value = Math.Round(rand.NextDouble() * 1000, 2);
@@ -86,9 +107,23 @@ namespace sqlonly
 
                 conn.Close();
 
+                lock(State)
+                {
+                    State.Count++;
+                }
 
             }
-
         }
+    }
+
+    public class WorkerState
+    {
+        public DateTime StartTime {get; set;}
+        public long Count { get; set;}
+        public double Duration {get { 
+            double x = (DateTime.UtcNow.Subtract(StartTime).TotalSeconds);
+            return x;
+            }}
+
     }
 }
