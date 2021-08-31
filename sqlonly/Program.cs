@@ -14,9 +14,12 @@ namespace sqlonly
         static void Main(string[] args)
         {
             string connectionString = System.Environment.GetEnvironmentVariable("sqlconnectionstring");
-
+            int numWorkers = 100;
+            if (false == (int.TryParse(System.Environment.GetEnvironmentVariable("numworkers"), out numWorkers)))
+            {
+                numWorkers = 100;
+            }            
             List<Task> taskList = new List<Task>();
-            
             for(int i = 0; i < 100; i++)
             {
                 Worker w = new Worker() { ConnectionString= connectionString, WorkerId = i};

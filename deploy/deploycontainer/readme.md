@@ -17,3 +17,4 @@ imageUsername: From the access keys page in ACR
 imagePassword: From the access keys page in ACR
 
 sqlconnectionstring: connection string to the sql database
+

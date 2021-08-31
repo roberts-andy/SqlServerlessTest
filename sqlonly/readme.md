@@ -10,6 +10,13 @@ I have tested running the image locally in WSL2 and also publishing to an Azure 
 
 If you are running locally then you will need to either hardcode your connection string in Program.cs or set an environment variable called "sqlconnectionstring" with the sql connection string to connect to the deployed database.
 
+you can set the environment variables with this command in windows -- do this before opening VS Code
+```bash
+[Environment]::SetEnvironmentVariable('sqlconnectionstring', 'yourconnectionstring')
+[Environment]::SetEnvironmentVariable('numworkers', '100')
+```
+
+numworkers if not supplied will default to 100. i think that if you go over 100 you will exhaust the sql connection pool of the worker process and start to see diminishing returns or actual degradation in performance but i have not tested this.
 
 # Azure Deployments
 There are two deployment scripts 
@@ -29,7 +36,7 @@ Make sure and stop your container instance when you are not using it! If you do 
 
 you can deploy as many container instances as you want... just change the instance name. 
 
-Right now the code is hardcoded to 100 workers inserting as fast as they can. So if you have 5 container instances you will have 500 worker threads. 
+
 
 # What does this sample do? 
 The is a REALLY simple test ... I start 100 workers that are all calling a stored proc to insert into a table in SQL. The test was set up to drive and drive load against SQL Server serverless to see if it was going to have the desired throughput for an application that was considering SQL Serverless. Use ACI you can spin up multiple container instances to run at the same time and generate additional load. 
