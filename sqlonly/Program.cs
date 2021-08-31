@@ -13,13 +13,14 @@ namespace sqlonly
 
         static void Main(string[] args)
         {
-
+            string connectionString = System.Environment.GetEnvironmentVariable("sqlconnectionstring");
 
             List<Task> taskList = new List<Task>();
             
             for(int i = 0; i < 100; i++)
             {
-                taskList.Add(Task.Factory.StartNew(new Worker().RunTask));
+                Worker w = new Worker() { ConnectionString= connectionString, WorkerId = i};
+                taskList.Add(Task.Factory.StartNew(w.RunTask));
             }
             Task.WaitAll(taskList.ToArray());
         }
@@ -28,14 +29,17 @@ namespace sqlonly
 
     public class Worker
     {
+
+        public string ConnectionString {get; set;} 
+        public int WorkerId {get; set;}
+
         const string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()[]{}-=_+;':,.<>";
         public void RunTask()
         {
 
-            string connectionString = ConfigurationManager.AppSettings["sqlconnectionstring"];
             Random rand = new Random();
 
-            using SqlConnection conn = new SqlConnection(connectionString);
+            using SqlConnection conn = new SqlConnection(ConnectionString);
             using SqlCommand cmd = new SqlCommand("uspNewTransaction", conn);
 
             cmd.CommandType = CommandType.StoredProcedure;

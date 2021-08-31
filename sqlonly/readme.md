@@ -1,15 +1,4 @@
 
-# TODO: 
-Add a file named App.config. Add the following XML to the file and replace your the connection string to the connection string of your SQL Server
-
-```xml
-<?xml version="1.0" encoding="utf-8" ?>  
-<configuration>  
-  <appSettings>  
-    <add key="sqlconnectionstring" value="<your-connection-string>"/>  
-  </appSettings>  
-</configuration>  
-```
 
 
 # Requirements
@@ -19,10 +8,28 @@ If you want to deploy to docker, the included docker file will build a linux ima
 
 I have tested running the image locally in WSL2 and also publishing to an Azure Container Registry and running the container in Azure Container Instances. 
 
+If you are running locally then you will need to either hardcode your connection string in Program.cs or set an environment variable called "sqlconnectionstring" with the sql connection string to connect to the deployed database.
+
+
 # Azure Deployments
 There are two deployment scripts 
-1) to deploy the resource group, the Azure Container Registry, the SQL Server Logical Server and the SQL Server serverless database. 
-2) deploys a new azure container instance to your resource group. 
+1) in the folder deploy/deployrg is the script to deploy the resource group, the Azure Container Registry, the SQL Server Logical Server and the SQL Server serverless database. 
+2) in the folder deploy/deploycontainer deploys a new azure container instance to your resource group.
+
+There are instructions in each deployment foloder for how to execute the script. The process to deploy
+1) clone the repo
+2) deploy the resource group - arm template in the folder /deploy/deployrg
+3) connect to the deployed sql database and created the sql objects listed below 
+4) build the .net console app
+5) build the image - select "Docker Images:Build image" from the command pallette (crtl-shift-p)
+6) push the image to your container registry "Docker Images: Push" from the command pallette
+
+at this point the container should be running and you should be able to look at the TransactionRecord table and see the row count increasing.
+Make sure and stop your container instance when you are not using it! If you do not, then SQL will not go idle and you will continue to be billed. The container simply executes in a tight look untill it is killed.  
+
+you can deploy as many container instances as you want... just change the instance name. 
+
+Right now the code is hardcoded to 100 workers inserting as fast as they can. So if you have 5 container instances you will have 500 worker threads. 
 
 # What does this sample do? 
 The is a REALLY simple test ... I start 100 workers that are all calling a stored proc to insert into a table in SQL. The test was set up to drive and drive load against SQL Server serverless to see if it was going to have the desired throughput for an application that was considering SQL Serverless. Use ACI you can spin up multiple container instances to run at the same time and generate additional load. 
