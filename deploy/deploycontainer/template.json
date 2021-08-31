@@ -16,6 +16,9 @@
         },
         "imagePassword": {
             "type": "secureString"
+        },
+        "sqlconnectionstring": {
+            "type": "secureString"
         }
     },
     "resources": [
@@ -29,6 +32,12 @@
                     {
                         "name": "[parameters('containerName')]",
                         "properties": {
+                            "environmentVariables": [
+                                {
+                                    "name": "sqlconnectionstring",
+                                    "secureValue": "[parameters('sqlconnectionstring')]"
+                                }
+                            ],
                             "image": "[parameters('imageName')]",
                             "resources": {
                                 "requests": {
